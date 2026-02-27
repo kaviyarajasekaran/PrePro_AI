@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # PreProAI  
 A web-based platform for dataset preprocessing and accuracy evaluation.  
 
