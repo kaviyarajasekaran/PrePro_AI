@@ -1,0 +1,369 @@
+{% extends "base.html" %}
+{% block title %}PreproAI • Dashboard{% endblock %}
+
+{% block content %}
+{% set active_tab = active_tab or "tabUpload" %}
+{% with msgs = get_flashed_messages(with_categories=true) %}
+  {% if msgs %}
+    <div class="flash-wrap">
+      {% for cat, msg in msgs %}
+        {% if cat == "dash" %}
+          <div class="flash">{{ msg }}</div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<section class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="dash-sidebar">
+    <a class="dash-brand" href="{{ url_for('dashboard', tab=active_tab) }}">
+      <img src="{{ url_for('static', filename='img/logo.png') }}"
+        class="dash-logo"
+        alt="PreproAI Logo">
+      <span>
+        <span class="dash-brand-title">PreproAI</span>
+        <span class="dash-brand-sub">Upload → Clean → Visualize → Summary</span>
+      </span>
+    </a>
+
+    <nav class="dash-nav">
+      <button class="dash-item {% if active_tab=='tabUpload' %}is-active{% endif %}"
+              type="button" data-tab="tabUpload" onclick="showTab('tabUpload')">
+        <span class="dash-icon">1</span>
+        <span>
+          <span class="dash-title">Upload</span>
+          <span class="dash-desc">Add multiple CSV/XLSX files</span>
+        </span>
+      </button>
+
+      <button class="dash-item {% if active_tab=='tabClean' %}is-active{% endif %}"
+              type="button" data-tab="tabClean" onclick="showTab('tabClean')">
+        <span class="dash-icon">2</span>
+        <span>
+          <span class="dash-title">Clean</span>
+          <span class="dash-desc">Missing, duplicates, sort</span>
+        </span>
+      </button>
+
+      <button class="dash-item {% if active_tab=='tabViz' %}is-active{% endif %}"
+              type="button" data-tab="tabViz" onclick="showTab('tabViz')">
+        <span class="dash-icon">3</span>
+        <span>
+          <span class="dash-title">Visualization</span>
+          <span class="dash-desc">Charts & insights</span>
+        </span>
+      </button>
+
+      <button class="dash-item {% if active_tab=='tabSummary' %}is-active{% endif %}"
+              type="button" data-tab="tabSummary" onclick="showTab('tabSummary')">
+        <span class="dash-icon">4</span>
+        <span>
+          <span class="dash-title">Summary</span>
+          <span class="dash-desc">Dataset overview</span>
+        </span>
+      </button>
+    </nav>
+
+    <div class="dash-tip">
+      Tip: Use “Preview” to verify dataset before cleaning/visualizing.
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="dash-main">
+
+    <!-- Topbar -->
+    <div class="dash-topbar">
+      <div>
+        <h1 style="margin:0;">Dashboard</h1>
+        <p class="muted" style="margin:6px 0 0;">Work faster with a clean 4-step workflow.</p>
+      </div>
+
+      <div class="user-menu">
+        <button class="user-btn" type="button" onclick="toggleUserMenu()">
+          <span class="user-dot"></span>
+          <span>{{ user_email or "User" }}</span>
+        </button>
+        <div id="userDropdown" class="user-dropdown">
+          <div class="user-email">{{ user_email or "-" }}</div>
+          <a class="user-item" href="{{ url_for('logout') }}">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div>
+          {% for category, message in messages %}
+            <div class="output" style="margin-top:10px;">
+              <b style="text-transform:capitalize;">{{ category }}</b>: {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- UPLOAD -->
+    <section id="tabUpload" class="dash-tab" {% if active_tab != 'tabUpload' %}style="display:none;"{% endif %}>
+      <div class="dash-card">
+        <div class="dash-card-h">Upload files</div>
+        <div class="dash-card-b">
+
+          <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="panel-row">
+            <input class="file grow" type="file" name="files" multiple accept=".csv,.xlsx,.xls" />
+            <button type="submit" class="btn">Upload</button>
+          </form>
+
+          <p class="muted small" style="margin:10px 0 0;">Allowed: CSV, XLSX, XLS</p>
+
+          <!-- ✅ Preview moved UNDER the file list (full width) -->
+          <div class="dash-grid" style="margin-top:14px;">
+            <div class="dash-card span-6">
+              <div class="dash-card-h">Your uploaded files</div>
+              <div class="dash-card-b">
+                {% if user_files %}
+                  <ul class="list">
+                    {% for f in user_files %}
+                      <li style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
+                        <span style="word-break:break-word;">{{ f.filename }}</span>
+                        <button type="button" class="btn btn-ghost"
+                                onclick="previewFile('{{ f.stored_filename }}')">Preview</button>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="muted">No files uploaded yet.</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- full width -->
+            <div class="dash-card span-6" style="grid-column: span 12;">
+              <div class="dash-card-h">Preview</div>
+              <div class="dash-card-b">
+                <div id="previewBox" class="output" style="min-height:260px; overflow:auto;">
+                  <p class="muted" style="margin:0;">Click “Preview” to view first rows.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- CLEAN -->
+    <section id="tabClean" class="dash-tab" {% if active_tab != 'tabClean' %}style="display:none;"{% endif %}>
+      <div class="dash-card">
+        <div class="dash-card-h">Clean data</div>
+        <div class="dash-card-b">
+
+          <form action="{{ url_for('clean') }}" method="post" class="dash-grid">
+            <div class="dash-card span-6">
+              <div class="dash-card-h">Select file(s)</div>
+              <div class="dash-card-b">
+                <select class="file" name="selected_files" multiple size="10">
+                  {% for f in user_files %}
+                    <option value="{{ f.stored_filename }}">{{ f.filename }}</option>
+                  {% endfor %}
+                </select>
+                <p class="muted small" style="margin:10px 0 0;">Tip: Hold Ctrl to select multiple files.</p>
+              </div>
+            </div>
+
+            <div class="dash-card span-6">
+              <div class="dash-card-h">Cleaning options</div>
+              <div class="dash-card-b" style="display:grid; gap:10px;">
+                <label><input type="checkbox" name="opt_missing" checked> Handle missing values</label>
+                <label><input type="checkbox" name="opt_duplicates" checked> Remove duplicates</label>
+                <label><input type="checkbox" name="opt_sort"> Sort rows by column</label>
+                <input class="file" type="text" name="sort_col" placeholder="Column name to sort (optional)">
+                <button type="submit" class="btn btn-wide">Clean Selected</button>
+              </div>
+            </div>
+          </form>
+
+          <div class="dash-card" style="margin-top:14px;">
+            <div class="dash-card-h">Processed files</div>
+            <div class="dash-card-b">
+              {% if processed_files %}
+                <ul class="list">
+                  {% for f in processed_files %}
+                    <li style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
+                      <span style="word-break:break-all;">{{ f.split('__',1)[-1] }}</span>
+                      <a href="{{ url_for('download_processed', filename=f) }}" style="text-decoration:none;">
+                        <button type="button" class="btn btn-ghost">Download</button>
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p class="muted">No processed files yet.</p>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- VISUALIZATION -->
+    <section id="tabViz" class="dash-tab" {% if active_tab != 'tabViz' %}style="display:none;"{% endif %}>
+      <div class="dash-card">
+        <div class="dash-card-h">Visualization</div>
+        <div class="dash-card-b">
+
+          <form action="{{ url_for('visualize') }}" method="post" class="panel-row">
+            <select class="file grow" name="viz_file">
+              <option value="">-- Select a file --</option>
+              {% for f in user_files %}
+                <option value="{{ f.stored_filename }}">{{ f.filename }}</option>
+              {% endfor %}
+              {% for f in processed_files %}
+                <option value="{{ f }}">{{ f.split('__',1)[-1] }}</option>
+              {% endfor %}
+            </select>
+
+            <select class="file" name="chart_type" style="max-width:220px;">
+              <option value="histogram">Histogram</option>
+              <option value="bar">Bar</option>
+              <option value="line">Line</option>
+              <option value="scatter">Scatter</option>
+              <option value="pie">Pie</option>
+            </select>
+
+            <button type="submit" class="btn">Generate</button>
+          </form>
+
+          {% if chart_url %}
+            <div class="chartbox">
+              <img class="chartimg" src="{{ chart_url }}" alt="chart">
+            </div>
+          {% else %}
+            <p class="muted" style="margin-top:12px;">Choose a file and chart type to generate visualization.</p>
+          {% endif %}
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SUMMARY -->
+    <section id="tabSummary" class="dash-tab" {% if active_tab != 'tabSummary' %}style="display:none;"{% endif %}>
+      <div class="dash-card">
+        <div class="dash-card-h">Summary</div>
+        <div class="dash-card-b">
+
+          <form action="{{ url_for('summary') }}" method="post" class="panel-row">
+            <select class="file grow" name="summary_file">
+              <option value="">-- Select a file --</option>
+              {% for f in user_files %}
+                <option value="{{ f.stored_filename }}">{{ f.filename }}</option>
+              {% endfor %}
+              {% for f in processed_files %}
+                <option value="{{ f }}">{{ f.split('__',1)[-1] }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn">Generate Summary</button>
+          </form>
+
+          {% if summary_info %}
+            <div class="output" style="margin-top:14px;">
+              <p style="margin-top:0;"><b>File:</b> {{ summary_filename }}</p>
+              <p><b>Rows:</b> {{ summary_info.rows }} | <b>Columns:</b> {{ summary_info.cols }}</p>
+              <p><b>Missing:</b> {{ summary_info.missing }} | <b>Duplicates:</b> {{ summary_info.duplicates }}</p>
+              <p style="margin-bottom:0;"><b>Columns:</b> {{ summary_info.columns }}</p>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </section>
+
+  </div>
+</section>
+
+<script>
+  function showTab(id){
+    document.querySelectorAll(".dash-tab").forEach(s => s.style.display = "none");
+    const el = document.getElementById(id);
+    if(el) el.style.display = "block";
+
+    document.querySelectorAll(".dash-item").forEach(b => b.classList.remove("is-active"));
+    const btn = document.querySelector(`.dash-item[data-tab="${id}"]`);
+    if(btn) btn.classList.add("is-active");
+
+    // optional: update URL (so refresh keeps tab)
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", id);
+    window.history.replaceState({}, "", url);
+  }
+
+  function toggleUserMenu(){
+    const dd = document.getElementById("userDropdown");
+    dd.classList.toggle("open");
+  }
+
+  window.addEventListener("click", (e) => {
+    const menu = document.querySelector(".user-menu");
+    const dd = document.getElementById("userDropdown");
+    if(menu && dd && !menu.contains(e.target)) dd.classList.remove("open");
+  });
+
+  // ✅ Ensure correct tab is shown on load
+  document.addEventListener("DOMContentLoaded", () => {
+    const initial = "{{ active_tab }}";
+    showTab(initial);
+  });
+
+  async function previewFile(storedName){
+    // always ensure upload tab visible
+    showTab("tabUpload");
+
+    const box = document.getElementById("previewBox");
+    box.innerHTML = "<p class='muted' style='margin:0;'>Loading preview...</p>";
+    document.getElementById("previewBox").scrollIntoView({ behavior: "smooth", block: "start" });
+
+    // scroll to preview for comfort
+    box.scrollIntoView({behavior:"smooth", block:"start"});
+
+    try{
+      const res = await fetch(`/preview?file=${encodeURIComponent(storedName)}`);
+      const data = await res.json();
+      if(!res.ok) throw new Error(data.error || "Preview failed");
+
+      const cols = data.columns || [];
+      const rows = data.rows || [];
+
+      let html = "<table style='width:100%; border-collapse:collapse; font-size:13px;'>";
+      html += "<thead><tr>";
+      cols.forEach(c => html += `<th style="text-align:left; padding:8px; border-bottom:1px solid rgba(255,255,255,.10); position:sticky; top:0; background:rgba(0,0,0,.35);">${escapeHtml(c)}</th>`);
+      html += "</tr></thead><tbody>";
+
+      rows.forEach(r => {
+        html += "<tr>";
+        r.forEach(cell => {
+          html += `<td style="padding:8px; border-bottom:1px solid rgba(255,255,255,.06); white-space:nowrap;">${escapeHtml(String(cell))}</td>`;
+        });
+        html += "</tr>";
+      });
+
+      html += "</tbody></table>";
+      box.innerHTML = html;
+    }catch(e){
+      box.innerHTML = `<p style="color:#ffb4b4; margin:0;">${e.message}</p>`;
+    }
+  }
+
+  function escapeHtml(str){
+    return str
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+</script>
+{% endblock %}

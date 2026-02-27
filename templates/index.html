@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}PreproAI • Home{% endblock %}
+{% block content %}
+<section class="hero">
+
+  <!-- LEFT COLUMN -->
+  <div class="hero-left">
+    <div class="pill">Automate • Clean • Analyze</div>
+
+    <h1>
+      Data Pre-Processing
+      <span class="glow">Automation</span>
+    </h1>
+
+    <p class="lead">
+      Upload CSV files, auto-clean missing values & duplicates, generate summaries,
+      and create quick visualizations — all in one dashboard.
+    </p>
+
+    <div class="hero-actions">
+      {% if session.get('user_id') %}
+        <a class="btn" href="{{ url_for('dashboard') }}">Open Dashboard</a>
+      {% else %}
+        <a class="btn" href="{{ url_for('signup') }}">Get Started</a>
+        <a class="btn btn-ghost" href="{{ url_for('login') }}">I already have an account</a>
+      {% endif %}
+    </div>
+
+    <div class="step-chips">
+      <div class="chip"><span>1</span> Upload CSV</div>
+      <div class="chip"><span>2</span> Clean + Summary</div>
+      <div class="chip"><span>3</span> Visualize</div>
+    </div>
+  </div>  <!-- ✅ IMPORTANT: close hero-left here -->
+
+  <!-- RIGHT COLUMN -->
+  <div class="hero-right">
+    <div class="glass-card">
+      <div class="card-title">Key Features</div>
+      <div class="card-body">
+        <div class="mini-row"><span class="dot dot-green"></span> Auto-clean missing values</div>
+        <div class="mini-row"><span class="dot dot-blue"></span> Smart duplicate detection</div>
+        <div class="mini-row"><span class="dot dot-purple"></span> Instant dataset summary insights</div>
+        <div class="mini-row"><span class="dot dot-orange"></span> One-click visualization tools</div>
+      </div>
+    </div>
+  </div>
+
+</section>
+{% endblock %}

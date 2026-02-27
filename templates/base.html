@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}PreproAI{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}">
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="bg-overlay"></div>
+
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="{{ url_for('index') }}">
+        <img class="brand-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="PreproAI">
+        <span class="brand-text">Prepro<span class="brand-accent">AI</span></span>
+      </a>
+
+      <nav class="nav">
+        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+        <a class="nav-link" href="{{ url_for('about') }}">About</a>
+
+        {% if session.get('user_id') %}
+          <a class="nav-link" href="{{ url_for('dashboard') }}">Dashboard</a>
+
+          <div class="user-menu">
+            <button class="user-btn" type="button" onclick="toggleUserMenu()">
+              <span class="user-dot"></span>
+              <span class="user-label">User</span>
+            </button>
+
+            <div class="user-dropdown" id="userDropdown">
+              <div class="user-email">{{ session.get('user_email') }}</div>
+              <a class="user-item" href="{{ url_for('dashboard') }}">My Dashboard</a>
+              <a class="user-item" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+          </div>
+        {% else %}
+          <a class="btn btn-ghost" href="{{ url_for('login') }}">Login</a>
+          <a class="btn" href="{{ url_for('signup') }}">Sign up</a>
+        {% endif %}
+      </nav>
+
+      <script>
+        function toggleUserMenu(){
+          const el = document.getElementById("userDropdown");
+          if(!el) return;
+          el.classList.toggle("open");
+        }
+        document.addEventListener("click", (e) => {
+          const dd = document.getElementById("userDropdown");
+          if(!dd) return;
+          const btn = document.querySelector(".user-btn");
+          if(btn && (btn.contains(e.target) || dd.contains(e.target))) return;
+          dd.classList.remove("open");
+        });
+      </script>
+    </div>
+  </header>
+
+  <main class="container main">
+    {% block content %}{% endblock %}
+  </main>
+
+    {% if show_footer|default(true) %}
+    <footer class="footer">
+      <div class="container footer-inner">
+        <span>© {{ 2026 }} PreproAI</span>
+        <span class="muted">Data preprocessing automation</span>
+      </div>
+    </footer>
+    {% endif %}
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

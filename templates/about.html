@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}PreproAI • About{% endblock %}
+
+{% block content %}
+<section class="about">
+
+  <!-- Hero -->
+  <header class="about-hero">
+    <div class="about-kicker">Student Project • Data Automation</div>
+
+    <h1 class="about-title">
+      About <span class="about-accent">PreproAI</span>
+    </h1>
+
+    <p class="about-lead">
+      PreproAI is a lightweight web app that helps you <b>upload datasets</b>, <b>clean</b> them,
+      generate <b>quick summaries</b>, and build <b>basic visualizations</b> — in one smooth workflow.
+    </p>
+
+    <div class="about-tags">
+      <span class="tag">CSV / XLSX</span>
+      <span class="tag">Cleaning</span>
+      <span class="tag">Charts</span>
+      <span class="tag">Summary</span>
+    </div>
+  </header>
+
+  <!-- Content grid (clean sections, not boxy) -->
+  <div class="about-grid">
+
+    <section class="about-section">
+      <h2 class="about-h2">What it does</h2>
+      <ul class="about-list">
+        <li>Upload one or multiple <b>CSV / XLSX</b> files</li>
+        <li>Preview first rows instantly before cleaning</li>
+        <li>Remove duplicates + handle missing values</li>
+        <li>Generate dataset summary (rows, columns, missing, duplicates)</li>
+        <li>Create charts and save visualization images</li>
+      </ul>
+    </section>
+
+    <section class="about-section">
+      <h2 class="about-h2">Why it matters</h2>
+      <p class="about-p">
+        Most student projects spend a lot of time repeating the same preprocessing steps.
+        PreproAI focuses on a simple, fast workflow so you can spend more time on
+        <b>analysis</b> and <b>model building</b>.
+      </p>
+
+      <div class="about-mini">
+        <div class="mini-item">
+          <div class="mini-dot"></div>
+          <div>
+            <div class="mini-title">Faster workflow</div>
+            <div class="mini-sub">Upload → Clean → Visualize → Summary</div>
+          </div>
+        </div>
+
+        <div class="mini-item">
+          <div class="mini-dot"></div>
+          <div>
+            <div class="mini-title">Cleaner output</div>
+            <div class="mini-sub">Processed files are export-ready</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="about-section about-wide">
+      <h2 class="about-h2">Next upgrades</h2>
+      <ul class="about-list cols">
+        <li>More cleaning tools (encoding, scaling, outliers)</li>
+        <li>Column selector for charts (X/Y pick)</li>
+        <li>Download buttons for charts + summaries</li>
+        <li>English + Tamil UI labels</li>
+        <li>Deploy + custom domain</li>
+      </ul>
+    </section>
+
+    <!-- Creator at bottom -->
+    <footer class="creator-strip about-wide">
+      <div class="creator-left">
+        <div class="creator-avatar">KR</div>
+        <div>
+          <div class="creator-name">Kaviya R</div>
+          <div class="creator-email">kaviyarajasekaran247@gmail.com</div>
+        </div>
+      </div>
+
+      <div class="creator-links">
+        <a class="creator-link" href="https://www.linkedin.com/in/kaviya-r-947629315/" target="_blank" rel="noopener">
+          LinkedIn
+        </a>
+        <a class="creator-link" href="https://github.com/kaviyarajasekaran" target="_blank" rel="noopener">
+          GitHub
+        </a>
+      </div>
+    </footer>
+
+  </div>
+</section>
+{% endblock %}
