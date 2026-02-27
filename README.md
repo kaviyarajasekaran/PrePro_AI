@@ -58,5 +58,4 @@ Open: http://127.0.0.1:5000
 
 🐙 GitHub: (https://github.com/kaviyarajasekaran)
 
-**For Demo try to use my AI 
-**   :  https://prepro-ai.onrender.com
+**To explore this click ** :  https://prepro-ai.onrender.com
