@@ -5,7 +5,9 @@ A web-based platform for dataset preprocessing and accuracy evaluation.
 
 PreproAI is a lightweight web application that simplifies dataset preprocessing and visualization in a single workflow.  
 It helps users quickly clean datasets, generate summaries, and create charts before analysis or machine learning.
-
+<p align="center">
+<img src="dp home" alt="User Interface">
+</p>
 ---
 
 ## ✨ Features
