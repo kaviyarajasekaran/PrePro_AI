@@ -1,18 +1,6 @@
 # PreProAI  
 A web-based platform for dataset preprocessing and accuracy evaluation.  
 
-## Features  
-- Upload datasets for preprocessing  
-- Detect missing values and duplicates  
-- Perform accuracy evaluation  
-- Generate visualizations  
-- Download cleaned datasets  
-
-## How to Run  
-1. Clone this repository:  
-=======
-# PreproAI
-
 **AI Project • Data Automation Web App**
 
 PreproAI is a lightweight web application that simplifies dataset preprocessing and visualization in a single workflow.  
@@ -67,4 +55,3 @@ Open: http://127.0.0.1:5000
 🔗 LinkedIn: (https://www.linkedin.com/in/kaviya-r-947629315/)
 
 🐙 GitHub: (https://github.com/kaviyarajasekaran)
->>>>>>> 3186950d1b46a1557215157c84db25b7909ef637
